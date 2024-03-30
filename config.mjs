@@ -16,7 +16,10 @@ const config = {
   mode: "development",
   devtool: false,
   entry: {
-    main: "./src/index",
+    main: "./src/index.tsx",
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".jsx", ".js"],
   },
   plugins: [new HtmlWebpackPlugin()],
   output: {
@@ -25,6 +28,35 @@ const config = {
       ? path.resolve(__dirname, "webpack-dist")
       : path.resolve(__dirname, "rspack-dist"),
     filename: "[name].js",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|ts|jsx|tsx)$/,
+        exclude: [/node_modules/],
+        loader: "builtin:swc-loader",
+        options: {
+          sourceMap: true,
+          jsc: {
+            parser: {
+              tsx: true,
+              syntax: "typescript",
+            },
+            experimental: {
+              plugins: [
+                [
+                  "@swc/plugin-styled-jsx",
+                  {
+                    plugins: ["@styled-jsx/plugin-sass"],
+                  },
+                ],
+              ],
+            },
+          },
+        },
+        type: "javascript/auto",
+      },
+    ],
   },
   experiments: {
     css: true,
